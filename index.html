@@ -105,6 +105,18 @@
             </div>
         </section>
 
+        <!-- Feedback Section -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl max-w-xl mx-auto text-center space-y-4">
+            <div>
+                <h3 class="text-sm font-semibold text-indigo-400 uppercase tracking-wider">Found an issue or have a suggestion?</h3>
+                <p class="text-xs text-slate-400 mt-1">Help us improve CleanCRM by sharing your thoughts directly.</p>
+            </div>
+            <form id="feedbackForm" action="https://formspree.io/f/your-form-id" method="POST" class="space-y-3">
+                <textarea name="feedback" required rows="3" placeholder="Tell us what you think or report a bug..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+                <button type="submit" class="w-full py-2.5 text-xs font-bold uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-colors border border-slate-700">Send Feedback</button>
+            </form>
+        </section>
+
     </main>
 
     <!-- Footer -->
@@ -195,12 +207,10 @@
             let missingFields = 0;
             let invalidEmails = 0;
             
-            // Check missing values & invalid emails
             rawData.forEach(row => {
                 let isEmpty = Object.values(row).some(val => !val || val.trim() === '');
                 if (isEmpty) missingFields++;
 
-                // Check email column if exists
                 Object.keys(row).forEach(key => {
                     if (key.toLowerCase().includes('email')) {
                         let email = row[key];
@@ -211,7 +221,6 @@
                 });
             });
 
-            // Find Duplicates
             let seen = new Set();
             let duplicates = 0;
             rawData.forEach(row => {
@@ -228,7 +237,6 @@
             document.getElementById('missingCount').innerText = missingFields;
             document.getElementById('invalidEmailCount').innerText = invalidEmails;
 
-            // Enable action buttons
             cleanBtn.disabled = false;
             cleanBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             downloadBtn.disabled = false;
@@ -290,4 +298,3 @@
     </script>
 </body>
 </html>
-
