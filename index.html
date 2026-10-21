@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>CleanCRM - CSV Cleaner</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2b;--line:#27344a;--text:#f5f7ff;--muted:#9aa9c0;--green:#42d6a4;--blue:#7798ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+header{padding:22px 18px;border-bottom:1px solid var(--line);background:#0d1423}
+.wrap{max-width:1050px;margin:auto}
+.logo{font-size:24px;font-weight:800;letter-spacing:-1px}
+.logo span{color:var(--green)}
+.tag{color:var(--muted);font-size:13px;margin-top:5px}
+main{max-width:1050px;margin:32px auto;padding:0 16px}
+.hero{padding:24px 0 28px}
+.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:2px}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.12;letter-spacing:-1.5px;margin:14px 0}
+p{color:var(--muted);line-height:1.7}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;min-width:0}
+h2{font-size:18px;margin:0 0 8px}
+.small{font-size:13px;color:var(--muted)}
+.drop{margin-top:18px;border:1px dashed #52647f;border-radius:14px;padding:25px 12px;text-align:center;background:#0d1525}
+input[type=file]{display:block;width:100%;margin:18px 0;color:var(--muted)}
+button{border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:#062219;font-weight:800;cursor:pointer;font-size:14px}
+button.secondary{background:#25334a;color:white;border:1px solid #40516b}
+button:disabled{opacity:.4;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.stat{background:#0b1322;border:1px solid var(--line);border-radius:12px;padding:13px}
+.stat strong{display:block;font-size:24px;color:var(--green)}
+.stat span{font-size:12px;color:var(--muted)}
+.status{margin-top:12px;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.tablebox{overflow:auto;max-height:350px;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);max-width:200px;overflow:hidden;text-overflow:ellipsis}
+th{background:#1b2840;position:sticky;top:0}
+.badge{display:inline-block;border-radius:30px;padding:5px 9px;background:#173c34;color:var(--green);font-size:11px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:28px 16px}
+.hidden{display:none}
+@media(max-width:650px){main{margin-top:15px}.grid{grid-template-columns:1fr}.card{padding:16px}.stats{gap:6px}.stat{padding:10px}.stat strong{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo">Clean<span>CRM</span></div>
+    <div class="tag">Simple data cleaning for better business.</div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">FREE CSV CLEANING TOOL</div>
+    <h1>Clean your data.<br>Work smarter.</h1>
+    <p>Find duplicate rows, missing values and invalid email formats in your CSV file. Preview the results and download your cleaned data.</p>
+    <span class="badge">Private by design · Browser processing</span>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>01. Upload your CSV</h2>
+      <p class="small">Choose a .csv file from your device. Your file stays in your browser.</p>
+      <div class="drop">
+        <div style="font-size:30px">⇧</div>
+        <strong>Select your CSV file</strong>
+        <input id="file" type="file" accept=".csv,text/csv">
+        <div class="small">CSV format only</div>
+      </div>
+      <div class="actions">
+        <button id="sample" class="secondary">Try sample data</button>
+        <button id="reset" class="secondary">Reset</button>
+      </div>
+      <div id="status" class="status" role="status">Waiting for a file.</div>
+    </section>
+
+    <section class="card">
+      <h2>02. Data quality report</h2>
+      <p class="small">Your results update after a file is loaded.</p>
+      <div class="stats">
+        <div class="stat"><strong id="rows">0</strong><span>Data rows</span></div>
+        <div class="stat"><strong id="dupes">0</strong><span>Duplicate rows</span></div>
+        <div class="stat"><strong id="missing">0</strong><span>Rows with missing data</span></div>
+      </div>
+      <div class="stat" style="margin-top:10px">
+        <strong id="invalid">0</strong><span>Invalid email values</span>
+      </div>
+      <div class="actions">
+        <button id="clean" disabled>Remove duplicate rows</button>
+        <button id="download" class="secondary" disabled>Download CSV</button>
+      </div>
+      <p class="small">Duplicate detection compares complete rows. Email validation runs on columns whose header contains “email”.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>03. Data preview</h2>
+    <p class="small">A preview of the first 100 rows. Empty cells are highlighted.</p>
+    <div id="preview" class="tablebox">
+      <p style="padding:12px">Upload a CSV file to see your data here.</p>
+    </div>
+  </section>
+  <p class="small">Tip: Keep a backup of your original file. Check your cleaned data before using it for business outreach.</p>
+</main>
+
+<footer>CleanCRM · A simple tool for cleaner business data.</footer>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  let headers = [], original = [], current = [], filename = "cleancrm-data.csv";
+
+  // CSV parser supports quoted cells, commas and line breaks inside quotes.
+  function parseCSV(text){
+    text = text.replace(/^\uFEFF/, "");
+    const rows = [];
+    let row = [], cell = "", quoted = false;
+    for(let i=0;i<text.length;i++){
+      const c = text[i];
+      if(quoted){
+        if(c === '"' && text[i+1] === '"'){cell+='"';i++;}
+        else if(c === '"') quoted = false;
+        else cell += c;
+      }else{
+        if(c === '"' && cell === "") quoted = true;
+        else if(c === ","){row.push(cell);cell="";}
+        else if(c === "\n"){row.push(cell);rows.push(row);row=[];cell="";}
+        else if(c !== "\r") cell += c;
+      }
+    }
+    if(quoted) throw new Error("Your CSV has an unclosed quotation mark.");
+    if(cell.length || row.length){row.push(cell);rows.push(row);}
+    while(rows.length && rows[rows.length-1].every(v=>v.trim()==="")) rows.pop();
+    if(!rows.length) throw new Error("The CSV file is empty.");
+    const width = Math.max(...rows.map(r=>r.length));
+    return rows.map(r=>Array.from({length:width},(_,i)=>r[i] ?? ""));
+  }
+
+  function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g,c=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  function isValidEmail(value){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  }
+
+  function duplicateCount(rows){
+    const seen = new Set();
+    let count = 0;
+    rows.forEach(r=>{
+      const key = JSON.stringify(r.map(v=>v.trim()));
+      if(seen.has(key)) count++;
+      else seen.add(key);
+    });
+    return count;
+  }
+
+  function missingCount(rows){
+    return rows.filter(r=>r.some(v=>v.trim()==="")).length;
+  }
+
+  function invalidEmailCount(rows, cols){
+    if(!cols.length) return 0;
+    let count = 0;
+    rows.forEach(r=>{
+      cols.forEach(i=>{
+        const value = (r[i]||"").trim();
+        if(value && !isValidEmail(value)) count++;
+      });
+    });
+    return count;
+  }
+
+  function render(){
+    const emailCols = headers
+      .map((h,i)=>/email/i.test(h)?i:-1)
+      .filter(i=>i>=0);
+
+    $("rows").textContent = current.length;
+    $("dupes").textContent = duplicateCount(current);
+    $("missing").textContent = missingCount(current);
+    $("invalid").textContent = invalidEmailCount(current,emailCols);
+    $("clean").disabled = current.length===0;
+    $("download").disabled = current.length===0;
+
+    if(!headers.length){
+      $("preview").innerHTML='<p style="padding:12px">Upload a CSV file to see your data here.</p>';
+      return;
+    }
+
+    let html="<table><thead><tr>";
+    headers.forEach(h=>html+="<th>"+escapeHTML(h)+"</th>");
+    html+="</tr></thead><tbody>";
+    current.slice(0,100).forEach(r=>{
+      html+="<tr>";
+      headers.forEach((_,i)=>{
+        const value=r[i]||"";
+        const empty=value.trim()==="";
+        html+='<td style="'+(empty?'background:#39252b;color:#ffb4bd;':'')+'">'+
+          (empty?"Missing":escapeHTML(value))+"</td>";
+      });
+      html+="</tr>";
+    });
+    html+="</tbody></table>";
+    if(current.length>100) html+='<div class="small" style="padding:10px">Showing first 100 rows.</div>';
+    $("preview").innerHTML=html;
+  }
+
+  function loadText(text,name){
+    const parsed = parseCSV(text);
+    if(parsed.length<2) throw new Error("CSV mein header aur kam se kam ek data row hona chahiye.");
+    headers = parsed[0].map((h,i)=>h.trim() || "Column "+(i+1));
+    original = parsed.slice(1).filter(r=>r.some(v=>v.trim()!==""));
+    current = original.map(r=>r.slice());
+    filename = name.replace(/\.csv$/i,"") || "cleancrm-data";
+    render();
+    $("status").textContent="Loaded successfully. "+current.length+" data rows found.";
+  }
+
+  $("file").addEventListener("change",async e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    if(file.size>10*1024*1024){
+      $("status").textContent="File is too large. Please choose a CSV under 10 MB.";
+      e.target.value="";
+      return;
+    }
+    try{
+      loadText(await file.text(),file.name);
+    }catch(err){
+      $("status").textContent=err.message || "Could not read this CSV.";
+    }
+  });
+
+  $("clean").addEventListener("click",()=>{
+    const seen=new Set();
+    const before=current.length;
+    current=current.filter(r=>{
+      const key=JSON.stringify(r.map(v=>v.trim()));
+      if(seen.has(key))return false;
+      seen.add(key);
+      return true;
+    });
+    render();
+    $("status").textContent=(before-current.length)+" duplicate rows removed. Review the data before downloading.";
+  });
+
+  $("download").addEventListener("click",()=>{
+    function csvCell(value){
+      const s=String(value??"");
+      // Protect spreadsheet users from common formula-injection values.
+      const safe=/^[\s]*[=+\-@]/.test(s) ? "'"+s : s;
+      return '"'+safe.replace(/"/g,'""')+'"';
+    }
+    const content=[headers,...current].map(r=>r.map(csvCell).join(",")).join("\r\n");
+    const blob=new Blob(["\uFEFF"+content],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=filename+"-cleaned.csv";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    $("status").textContent="Download started. Please check the saved CSV.";
+  });
+
+  $("sample").addEventListener("click",()=>{
+    const sample=[
+      ["Name","Email","Company"],
+      ["Alex Morgan","alex@example.com","Northwind"],
+      ["Jamie Lee","invalid-email","Contoso"],
+      ["Sam Taylor","","Fabrikam"],
+      ["Alex Morgan","alex@example.com","Northwind"],
+      ["Riley Chen","riley@example.com",""]
+    ];
+    try{
+      loadText(sample.map(r=>r.map(v=>'"'+v.replace(/"/g,'""')+'"').join(",")).join("\n"),"cleancrm-sample.csv");
+    }catch(err){$("status").textContent=err.message;}
+  });
+
+  $("reset").addEventListener("click",()=>{
+    headers=[];original=[];current=[];filename="cleancrm-data.csv";
+    $("file").value="";
+    $("status").textContent="Reset complete. Waiting for a file.";
+    render();
+  });
+})();
+</script>
+</body>
+        </html>
+
