@@ -1,295 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101827">
-<title>CleanCRM - CSV Cleaner</title>
-<style>
-:root{--bg:#0b1020;--panel:#121a2b;--line:#27344a;--text:#f5f7ff;--muted:#9aa9c0;--green:#42d6a4;--blue:#7798ff}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
-header{padding:22px 18px;border-bottom:1px solid var(--line);background:#0d1423}
-.wrap{max-width:1050px;margin:auto}
-.logo{font-size:24px;font-weight:800;letter-spacing:-1px}
-.logo span{color:var(--green)}
-.tag{color:var(--muted);font-size:13px;margin-top:5px}
-main{max-width:1050px;margin:32px auto;padding:0 16px}
-.hero{padding:24px 0 28px}
-.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:2px}
-h1{font-size:clamp(30px,6vw,48px);line-height:1.12;letter-spacing:-1.5px;margin:14px 0}
-p{color:var(--muted);line-height:1.7}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;min-width:0}
-h2{font-size:18px;margin:0 0 8px}
-.small{font-size:13px;color:var(--muted)}
-.drop{margin-top:18px;border:1px dashed #52647f;border-radius:14px;padding:25px 12px;text-align:center;background:#0d1525}
-input[type=file]{display:block;width:100%;margin:18px 0;color:var(--muted)}
-button{border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:#062219;font-weight:800;cursor:pointer;font-size:14px}
-button.secondary{background:#25334a;color:white;border:1px solid #40516b}
-button:disabled{opacity:.4;cursor:not-allowed}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
-.stat{background:#0b1322;border:1px solid var(--line);border-radius:12px;padding:13px}
-.stat strong{display:block;font-size:24px;color:var(--green)}
-.stat span{font-size:12px;color:var(--muted)}
-.status{margin-top:12px;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
-.tablebox{overflow:auto;max-height:350px;border:1px solid var(--line);border-radius:10px;margin-top:12px}
-table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
-th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);max-width:200px;overflow:hidden;text-overflow:ellipsis}
-th{background:#1b2840;position:sticky;top:0}
-.badge{display:inline-block;border-radius:30px;padding:5px 9px;background:#173c34;color:var(--green);font-size:11px}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:28px 16px}
-.hidden{display:none}
-@media(max-width:650px){main{margin-top:15px}.grid{grid-template-columns:1fr}.card{padding:16px}.stats{gap:6px}.stat{padding:10px}.stat strong{font-size:21px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CleanCRM - Instant CRM Data Cleaner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-<body>
-<header>
-  <div class="wrap">
-    <div class="logo">Clean<span>CRM</span></div>
-    <div class="tag">Simple data cleaning for better business.</div>
-  </div>
-</header>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
 
-<main>
-  <section class="hero">
-    <div class="eyebrow">FREE CSV CLEANING TOOL</div>
-    <h1>Clean your data.<br>Work smarter.</h1>
-    <p>Find duplicate rows, missing values and invalid email formats in your CSV file. Preview the results and download your cleaned data.</p>
-    <span class="badge">Private by design · Browser processing</span>
-  </section>
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white">CleanCRM</h1>
+                    <p class="text-xs text-slate-400">Instantly clean, validate, and deduplicate your CRM lists.</p>
+                </div>
+            </div>
+            <span class="text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1 rounded-full font-medium">v1.0 MVP</span>
+        </div>
+    </header>
 
-  <div class="grid">
-    <section class="card">
-      <h2>01. Upload your CSV</h2>
-      <p class="small">Choose a .csv file from your device. Your file stays in your browser.</p>
-      <div class="drop">
-        <div style="font-size:30px">⇧</div>
-        <strong>Select your CSV file</strong>
-        <input id="file" type="file" accept=".csv,text/csv">
-        <div class="small">CSV format only</div>
-      </div>
-      <div class="actions">
-        <button id="sample" class="secondary">Try sample data</button>
-        <button id="reset" class="secondary">Reset</button>
-      </div>
-      <div id="status" class="status" role="status">Waiting for a file.</div>
-    </section>
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- Hero Section -->
+        <div class="text-center space-y-2">
+            <span class="text-xs uppercase tracking-widest text-indigo-400 font-semibold bg-indigo-950/50 px-3 py-1 rounded-md border border-indigo-900/50">Free CSV Cleaning Tool</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Clean your data. Work smarter.</h2>
+            <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">Find duplicate rows, missing values, and invalid email formats in your CSV file. Preview results instantly in your browser.</p>
+        </div>
 
-    <section class="card">
-      <h2>02. Data quality report</h2>
-      <p class="small">Your results update after a file is loaded.</p>
-      <div class="stats">
-        <div class="stat"><strong id="rows">0</strong><span>Data rows</span></div>
-        <div class="stat"><strong id="dupes">0</strong><span>Duplicate rows</span></div>
-        <div class="stat"><strong id="missing">0</strong><span>Rows with missing data</span></div>
-      </div>
-      <div class="stat" style="margin-top:10px">
-        <strong id="invalid">0</strong><span>Invalid email values</span>
-      </div>
-      <div class="actions">
-        <button id="clean" disabled>Remove duplicate rows</button>
-        <button id="download" class="secondary" disabled>Download CSV</button>
-      </div>
-      <p class="small">Duplicate detection compares complete rows. Email validation runs on columns whose header contains “email”.</p>
-    </section>
-  </div>
+        <!-- Step 01: Upload Section -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-indigo-400 uppercase tracking-wider">01. Upload your CSV</h3>
+                <span class="text-xs text-emerald-400 bg-emerald-950/50 border border-emerald-900/50 px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Private: Browser processing only
+                </span>
+            </div>
 
-  <section class="card">
-    <h2>03. Data preview</h2>
-    <p class="small">A preview of the first 100 rows. Empty cells are highlighted.</p>
-    <div id="preview" class="tablebox">
-      <p style="padding:12px">Upload a CSV file to see your data here.</p>
-    </div>
-  </section>
-  <p class="small">Tip: Keep a backup of your original file. Check your cleaned data before using it for business outreach.</p>
-</main>
+            <!-- Drag & Drop Dropzone -->
+            <div id="dropzone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-8 text-center transition-all cursor-pointer bg-slate-950/40 group">
+                <input type="file" id="csvFile" accept=".csv" class="hidden">
+                <div class="flex flex-col items-center justify-center space-y-3">
+                    <div class="p-3 bg-slate-800 group-hover:bg-indigo-600/20 text-slate-300 group-hover:text-indigo-400 rounded-full transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-200">Drag and drop your CSV file here, or <span class="text-indigo-400 underline">browse</span></p>
+                        <p class="text-xs text-slate-500 mt-1">Supports standard CSV files (HubSpot, Salesforce, Custom)</p>
+                    </div>
+                </div>
+            </div>
 
-<footer>CleanCRM · A simple tool for cleaner business data.</footer>
+            <!-- File Info & Actions -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+                <div id="fileInfo" class="text-xs text-slate-400 italic">No file selected yet.</div>
+                <div class="flex gap-2">
+                    <button id="sampleBtn" class="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700">Try Sample Data</button>
+                    <button id="resetBtn" class="px-4 py-2 text-xs font-semibold bg-red-950/30 hover:bg-red-900/40 text-red-400 rounded-lg transition-colors border border-red-900/50 hidden">Reset</button>
+                </div>
+            </div>
+        </section>
 
-<script>
-(function(){
-  const $ = id => document.getElementById(id);
-  let headers = [], original = [], current = [], filename = "cleancrm-data.csv";
+        <!-- Step 02: Data Quality Report -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h3 class="text-sm font-semibold text-indigo-400 uppercase tracking-wider mb-4">02. Data quality report</h3>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl">
+                    <p class="text-xs text-slate-400 font-medium">Data Rows</p>
+                    <p id="rowCount" class="text-2xl font-bold text-white mt-1">0</p>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl">
+                    <p class="text-xs text-slate-400 font-medium">Duplicate Rows</p>
+                    <p id="dupCount" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl">
+                    <p class="text-xs text-slate-400 font-medium">Missing Data</p>
+                    <p id="missingCount" class="text-2xl font-bold text-orange-400 mt-1">0</p>
+                </div>
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl">
+                    <p class="text-xs text-slate-400 font-medium">Invalid Emails</p>
+                    <p id="invalidEmailCount" class="text-2xl font-bold text-red-400 mt-1">0</p>
+                </div>
+            </div>
 
-  // CSV parser supports quoted cells, commas and line breaks inside quotes.
-  function parseCSV(text){
-    text = text.replace(/^\uFEFF/, "");
-    const rows = [];
-    let row = [], cell = "", quoted = false;
-    for(let i=0;i<text.length;i++){
-      const c = text[i];
-      if(quoted){
-        if(c === '"' && text[i+1] === '"'){cell+='"';i++;}
-        else if(c === '"') quoted = false;
-        else cell += c;
-      }else{
-        if(c === '"' && cell === "") quoted = true;
-        else if(c === ","){row.push(cell);cell="";}
-        else if(c === "\n"){row.push(cell);rows.push(row);row=[];cell="";}
-        else if(c !== "\r") cell += c;
-      }
-    }
-    if(quoted) throw new Error("Your CSV has an unclosed quotation mark.");
-    if(cell.length || row.length){row.push(cell);rows.push(row);}
-    while(rows.length && rows[rows.length-1].every(v=>v.trim()==="")) rows.pop();
-    if(!rows.length) throw new Error("The CSV file is empty.");
-    const width = Math.max(...rows.map(r=>r.length));
-    return rows.map(r=>Array.from({length:width},(_,i)=>r[i] ?? ""));
-  }
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3">
+                <button id="cleanBtn" disabled class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 opacity-50 cursor-not-allowed transition-all">Remove Duplicate Rows</button>
+                <button id="downloadBtn" disabled class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-600/20 opacity-50 cursor-not-allowed transition-all">Download Cleaned CSV</button>
+            </div>
+        </section>
 
-  function escapeHTML(value){
-    return String(value).replace(/[&<>"']/g,c=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[c]));
-  }
+        <!-- Step 03: Data Preview -->
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h3 class="text-sm font-semibold text-indigo-400 uppercase tracking-wider mb-4">03. Data preview (First 100 rows)</h3>
+            <div id="tableContainer" class="border border-slate-800 rounded-xl overflow-x-auto max-h-96 bg-slate-950/60 text-xs">
+                <div class="p-8 text-center text-slate-500 italic">Upload a CSV file to inspect your data.</div>
+            </div>
+        </section>
 
-  function isValidEmail(value){
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-  }
+    </main>
 
-  function duplicateCount(rows){
-    const seen = new Set();
-    let count = 0;
-    rows.forEach(r=>{
-      const key = JSON.stringify(r.map(v=>v.trim()));
-      if(seen.has(key)) count++;
-      else seen.add(key);
-    });
-    return count;
-  }
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 py-8 mt-12 text-center text-xs text-slate-500 space-y-2">
+        <p>CleanCRM &mdash; A simple tool for cleaner business data.</p>
+        <p class="text-slate-600">Built for Founders, Sales Reps & CRM Operators.</p>
+    </footer>
 
-  function missingCount(rows){
-    return rows.filter(r=>r.some(v=>v.trim()==="")).length;
-  }
+    <!-- JavaScript Processing Logic -->
+    <script>
+        let rawData = [];
+        let headers = [];
+        let cleanedData = [];
 
-  function invalidEmailCount(rows, cols){
-    if(!cols.length) return 0;
-    let count = 0;
-    rows.forEach(r=>{
-      cols.forEach(i=>{
-        const value = (r[i]||"").trim();
-        if(value && !isValidEmail(value)) count++;
-      });
-    });
-    return count;
-  }
+        const dropzone = document.getElementById('dropzone');
+        const csvFileInput = document.getElementById('csvFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const sampleBtn = document.getElementById('sampleBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const cleanBtn = document.getElementById('cleanBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
 
-  function render(){
-    const emailCols = headers
-      .map((h,i)=>/email/i.test(h)?i:-1)
-      .filter(i=>i>=0);
+        dropzone.addEventListener('click', () => csvFileInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-indigo-500', 'bg-indigo-950/20'); });
+        dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-indigo-500', 'bg-indigo-950/20'); });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-indigo-500', 'bg-indigo-950/20');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        csvFileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
 
-    $("rows").textContent = current.length;
-    $("dupes").textContent = duplicateCount(current);
-    $("missing").textContent = missingCount(current);
-    $("invalid").textContent = invalidEmailCount(current,emailCols);
-    $("clean").disabled = current.length===0;
-    $("download").disabled = current.length===0;
+        sampleBtn.addEventListener('click', () => {
+            const sampleCSV = `Name,Email,Phone,City\nRahul Sharma,rahul@gmail.com,9876543210,Delhi\nPriya Singh,priya.singh@gmail,9876543210,Mumbai\nRahul Sharma,rahul@gmail.com,9876543211,Delhi\nAmit Kumar,,9123456789,Bangalore\nSneha Gupta,sneha@yahoo.com,,Kolkata`;
+            parseCSVText(sampleCSV, 'sample_crm_data.csv');
+        });
 
-    if(!headers.length){
-      $("preview").innerHTML='<p style="padding:12px">Upload a CSV file to see your data here.</p>';
-      return;
-    }
+        resetBtn.addEventListener('click', () => {
+            rawData = [];
+            headers = [];
+            cleanedData = [];
+            csvFileInput.value = '';
+            fileInfo.innerText = "No file selected yet.";
+            resetBtn.classList.add('hidden');
+            cleanBtn.disabled = true;
+            cleanBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            downloadBtn.disabled = true;
+            downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('rowCount').innerText = '0';
+            document.getElementById('dupCount').innerText = '0';
+            document.getElementById('missingCount').innerText = '0';
+            document.getElementById('invalidEmailCount').innerText = '0';
+            document.getElementById('tableContainer').innerHTML = `<div class="p-8 text-center text-slate-500 italic">Upload a CSV file to inspect your data.</div>`;
+        });
 
-    let html="<table><thead><tr>";
-    headers.forEach(h=>html+="<th>"+escapeHTML(h)+"</th>");
-    html+="</tr></thead><tbody>";
-    current.slice(0,100).forEach(r=>{
-      html+="<tr>";
-      headers.forEach((_,i)=>{
-        const value=r[i]||"";
-        const empty=value.trim()==="";
-        html+='<td style="'+(empty?'background:#39252b;color:#ffb4bd;':'')+'">'+
-          (empty?"Missing":escapeHTML(value))+"</td>";
-      });
-      html+="</tr>";
-    });
-    html+="</tbody></table>";
-    if(current.length>100) html+='<div class="small" style="padding:10px">Showing first 100 rows.</div>';
-    $("preview").innerHTML=html;
-  }
+        function handleFile(file) {
+            fileInfo.innerText = `Loaded: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+            resetBtn.classList.remove('hidden');
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    headers = results.meta.fields || [];
+                    rawData = results.data;
+                    cleanedData = [...rawData];
+                    analyzeData();
+                }
+            });
+        }
 
-  function loadText(text,name){
-    const parsed = parseCSV(text);
-    if(parsed.length<2) throw new Error("CSV mein header aur kam se kam ek data row hona chahiye.");
-    headers = parsed[0].map((h,i)=>h.trim() || "Column "+(i+1));
-    original = parsed.slice(1).filter(r=>r.some(v=>v.trim()!==""));
-    current = original.map(r=>r.slice());
-    filename = name.replace(/\.csv$/i,"") || "cleancrm-data";
-    render();
-    $("status").textContent="Loaded successfully. "+current.length+" data rows found.";
-  }
+        function parseCSVText(text, filename) {
+            fileInfo.innerText = `Loaded sample: ${filename}`;
+            resetBtn.classList.remove('hidden');
+            Papa.parse(text, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    headers = results.meta.fields || [];
+                    rawData = results.data;
+                    cleanedData = [...rawData];
+                    analyzeData();
+                }
+            });
+        }
 
-  $("file").addEventListener("change",async e=>{
-    const file=e.target.files[0];
-    if(!file)return;
-    if(file.size>10*1024*1024){
-      $("status").textContent="File is too large. Please choose a CSV under 10 MB.";
-      e.target.value="";
-      return;
-    }
-    try{
-      loadText(await file.text(),file.name);
-    }catch(err){
-      $("status").textContent=err.message || "Could not read this CSV.";
-    }
-  });
+        function analyzeData() {
+            let rowCount = rawData.length;
+            let missingFields = 0;
+            let invalidEmails = 0;
+            
+            // Check missing values & invalid emails
+            rawData.forEach(row => {
+                let isEmpty = Object.values(row).some(val => !val || val.trim() === '');
+                if (isEmpty) missingFields++;
 
-  $("clean").addEventListener("click",()=>{
-    const seen=new Set();
-    const before=current.length;
-    current=current.filter(r=>{
-      const key=JSON.stringify(r.map(v=>v.trim()));
-      if(seen.has(key))return false;
-      seen.add(key);
-      return true;
-    });
-    render();
-    $("status").textContent=(before-current.length)+" duplicate rows removed. Review the data before downloading.";
-  });
+                // Check email column if exists
+                Object.keys(row).forEach(key => {
+                    if (key.toLowerCase().includes('email')) {
+                        let email = row[key];
+                        if (email && (!email.includes('@') || !email.includes('.'))) {
+                            invalidEmails++;
+                        }
+                    }
+                });
+            });
 
-  $("download").addEventListener("click",()=>{
-    function csvCell(value){
-      const s=String(value??"");
-      // Protect spreadsheet users from common formula-injection values.
-      const safe=/^[\s]*[=+\-@]/.test(s) ? "'"+s : s;
-      return '"'+safe.replace(/"/g,'""')+'"';
-    }
-    const content=[headers,...current].map(r=>r.map(csvCell).join(",")).join("\r\n");
-    const blob=new Blob(["\uFEFF"+content],{type:"text/csv;charset=utf-8"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download=filename+"-cleaned.csv";
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-    $("status").textContent="Download started. Please check the saved CSV.";
-  });
+            // Find Duplicates
+            let seen = new Set();
+            let duplicates = 0;
+            rawData.forEach(row => {
+                let rowString = JSON.stringify(row);
+                if (seen.has(rowString)) {
+                    duplicates++;
+                } else {
+                    seen.add(rowString);
+                }
+            });
 
-  $("sample").addEventListener("click",()=>{
-    const sample=[
-      ["Name","Email","Company"],
-      ["Alex Morgan","alex@example.com","Northwind"],
-      ["Jamie Lee","invalid-email","Contoso"],
-      ["Sam Taylor","","Fabrikam"],
-      ["Alex Morgan","alex@example.com","Northwind"],
-      ["Riley Chen","riley@example.com",""]
-    ];
-    try{
-      loadText(sample.map(r=>r.map(v=>'"'+v.replace(/"/g,'""')+'"').join(",")).join("\n"),"cleancrm-sample.csv");
-    }catch(err){$("status").textContent=err.message;}
-  });
+            document.getElementById('rowCount').innerText = rowCount;
+            document.getElementById('dupCount').innerText = duplicates;
+            document.getElementById('missingCount').innerText = missingFields;
+            document.getElementById('invalidEmailCount').innerText = invalidEmails;
 
-  $("reset").addEventListener("click",()=>{
-    headers=[];original=[];current=[];filename="cleancrm-data.csv";
-    $("file").value="";
-    $("status").textContent="Reset complete. Waiting for a file.";
-    render();
-  });
-})();
-</script>
+            // Enable action buttons
+            cleanBtn.disabled = false;
+            cleanBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            downloadBtn.disabled = false;
+            downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            renderTable(rawData);
+        }
+
+        cleanBtn.addEventListener('click', () => {
+            let uniqueMap = new Map();
+            rawData.forEach(row => {
+                let key = JSON.stringify(row);
+                if (!uniqueMap.has(key)) {
+                    uniqueMap.set(key, row);
+                }
+            });
+            cleanedData = Array.from(uniqueMap.values());
+            document.getElementById('dupCount').innerText = '0';
+            renderTable(cleanedData);
+            alert("Duplicate rows successfully removed from preview!");
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            let csv = Papa.unparse(cleanedData);
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'cleaned_crm_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        function renderTable(data) {
+            if (!data.length) return;
+            let html = `<table class="w-full text-left border-collapse"><thead class="bg-slate-900 sticky top-0 text-slate-400 border-b border-slate-800"><tr>`;
+            headers.forEach(h => { html += `<th class="p-3 font-semibold">${h}</th>`; });
+            html += `</tr></thead><tbody class="divide-y divide-slate-900">`;
+            
+            data.slice(0, 100).forEach(row => {
+                html += `<tr class="hover:bg-slate-900/50">`;
+                headers.forEach(h => {
+                    let val = row[h] || '';
+                    let isMissing = !val || val.trim() === '';
+                    let isInvalidEmail = h.toLowerCase().includes('email') && val && (!val.includes('@') || !val.includes('.'));
+                    
+                    let bgClass = '';
+                    if (isMissing) bgClass = 'bg-orange-950/20 text-orange-300';
+                    if (isInvalidEmail) bgClass = 'bg-red-950/20 text-red-300';
+
+                    html += `<td class="p-3 truncate max-w-xs ${bgClass}">${val || '<span class="text-slate-600 italic">empty</span>'}</td>`;
+                });
+                html += `</tr>`;
+            });
+            html += `</tbody></table>`;
+            document.getElementById('tableContainer').innerHTML = html;
+        }
+    </script>
 </body>
-        </html>
+</html>
 
