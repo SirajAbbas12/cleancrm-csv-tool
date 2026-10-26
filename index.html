@@ -202,6 +202,10 @@
             });
         }
 
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
         function analyzeData() {
             let rowCount = rawData.length;
             let missingFields = 0;
@@ -214,7 +218,7 @@
                 Object.keys(row).forEach(key => {
                     if (key.toLowerCase().includes('email')) {
                         let email = row[key];
-                        if (email && (!email.includes('@') || !email.includes('.'))) {
+                        if (email && !isValidEmail(email.trim())) {
                             invalidEmails++;
                         }
                     }
@@ -282,7 +286,7 @@
                 headers.forEach(h => {
                     let val = row[h] || '';
                     let isMissing = !val || val.trim() === '';
-                    let isInvalidEmail = h.toLowerCase().includes('email') && val && (!val.includes('@') || !val.includes('.'));
+                    let isInvalidEmail = h.toLowerCase().includes('email') && val && !isValidEmail(val.trim());
                     
                     let bgClass = '';
                     if (isMissing) bgClass = 'bg-orange-950/20 text-orange-300';
