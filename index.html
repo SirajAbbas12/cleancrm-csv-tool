@@ -258,6 +258,7 @@
                 }
             });
             cleanedData = Array.from(uniqueMap.values());
+document.getElementById('rowCount').innerText = cleanedData.length;
             document.getElementById('dupCount').innerText = '0';
             renderTable(cleanedData);
             alert("Duplicate rows successfully removed from preview!");
