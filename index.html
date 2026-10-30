@@ -60,6 +60,7 @@
             <!-- File Info & Actions -->
             <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
                 <div id="fileInfo" class="text-xs text-slate-400 italic">No file selected yet.</div>
+<div id="uploadStatus" class="text-xs text-slate-400 mt-2" role="status" aria-live="polite"></div>
                 <div class="flex gap-2">
                     <button id="sampleBtn" class="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700">Try Sample Data</button>
                     <button id="resetBtn" class="px-4 py-2 text-xs font-semibold bg-red-950/30 hover:bg-red-900/40 text-red-400 rounded-lg transition-colors border border-red-900/50 hidden">Reset</button>
@@ -173,21 +174,56 @@
         });
 
         function handleFile(file) {
-            fileInfo.innerText = `Loaded: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-            resetBtn.classList.remove('hidden');
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    headers = results.meta.fields || [];
-                    rawData = results.data;
-                    cleanedData = [...rawData];
-                    analyzeData();
-                }
-            });
-        }
+    if (!file) return;
 
-        function parseCSVText(text, filename) {
+    fileInfo.innerText = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    fileInfo.className = 'text-xs text-slate-400';
+    uploadStatus.innerText = '⏳ Processing your CSV file...';
+    uploadStatus.className = 'text-xs text-indigo-400 mt-2';
+
+    resetBtn.classList.remove('hidden');
+
+    if (file.size === 0) {
+        uploadStatus.innerText = '⚠️ This file is empty. Please select a CSV containing data.';
+        uploadStatus.className = 'text-xs text-amber-400 mt-2';
+        return;
+    }
+
+    Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+
+        complete: function(results) {
+            headers = results.meta.fields || [];
+            rawData = results.data || [];
+            cleanedData = [...rawData];
+
+            if (headers.length === 0) {
+                uploadStatus.innerText = '❌ No valid CSV headers found.';
+                uploadStatus.className = 'text-xs text-red-400 mt-2';
+                return;
+            }
+
+            if (rawData.length === 0) {
+                uploadStatus.innerText = '⚠️ CSV headers found, but no contact rows are available.';
+                uploadStatus.className = 'text-xs text-amber-400 mt-2';
+                return;
+            }
+
+            analyzeData();
+
+            uploadStatus.innerText = `✅ Upload successful! ${rawData.length} contacts loaded.`;
+            uploadStatus.className = 'text-xs text-emerald-400 mt-2';
+        },
+
+        error: function(error) {
+            uploadStatus.innerText = `❌ Upload failed: ${error.message || 'Unable to read this file.'}`;
+            uploadStatus.className = 'text-xs text-red-400 mt-2';
+        }
+    });
+}
+
+function parseCSVText(text, filename) {
             fileInfo.innerText = `Loaded sample: ${filename}`;
             resetBtn.classList.remove('hidden');
             Papa.parse(text, {
